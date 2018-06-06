@@ -1,0 +1,3 @@
+servicename	servicetype AEnd 			ZEnd   			template	Path 		deviceList	linkslist 	operations customerName
+serv1		10g			/device1/port1 	/device2/port2	servicexml  d1-d2-d3	d1/d2/d3	l1/l2/l3 	C/CD		customer1
+serv2		10g			/device1/port1 	/device2/port2	servicexml  d1-d2-d3	d1/d2/d3	l1/l2/l3 	C/CD		customer2
