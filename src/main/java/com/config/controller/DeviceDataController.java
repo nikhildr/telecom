@@ -29,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Slf4j
-public class ServiceDataController {
+public class DeviceDataController {
 
 	@Autowired
 	private FileService fileService;
@@ -37,9 +37,9 @@ public class ServiceDataController {
 	@Autowired
 	private CsvFileUtil fileUtil;
 
-	@PostMapping("/config/service")
-	public ResponseEntity<?> saveServiceDataFile(@RequestParam("file") MultipartFile file) {
-		log.info("enter ServiceDataController.saveServiceDataFile{}", file);
+	@PostMapping("/config/device")
+	public ResponseEntity<?> saveDeviceeDataFile(@RequestParam("file") MultipartFile file) {
+		log.info("enter DeviceDataController.saveDeviceeDataFile{}", file);
 		
 		UserInfo userInfo = new UserInfo(); // temp
 		userInfo.setUserName("admin");
@@ -51,12 +51,12 @@ public class ServiceDataController {
 				try {
 					byte[] bytes = file.getBytes();
 					if (CsvFileUtil.saveFile(bytes, file.getOriginalFilename())) {
-						if (fileUtil.validateServiceDataHeader(
+						if (fileUtil.validateDeviceDataHeader(
 								Constants.FILE_DESTINATION_FOLDER + file.getOriginalFilename())) {
-							Long fileDataId = fileService.saveFileData(ConfigUtil.prepareFileDataEntity(bytes,file.getOriginalFilename(), Constants.SERVICE, userInfo.getUserName()));
+							Long fileDataId = fileService.saveFileData(ConfigUtil.prepareFileDataEntity(bytes,file.getOriginalFilename(), Constants.DEVICE, userInfo.getUserName()));
 							response.put(Constants.SUCCESS_MESSAGE, Constants.FILE_UPLOADED_SUCCESFULLY);
 							response.put("fileId", fileDataId);
-							log.info("exit ServiceDataController.saveServiceDataFile{}", response);
+							log.info("exit DeviceDataController.saveDeviceeDataFile{}", response);
 							responseEntity = new ResponseEntity<>(response, HttpStatus.OK);
 						}
 
@@ -64,13 +64,13 @@ public class ServiceDataController {
 				} catch (Exception e) {
 					e.printStackTrace();
 					response.put(Constants.ERROR_MESSAGE, Constants.FAILED_TO_UPLOAD_FILE);
-					log.error("exit ServiceDataController.saveServiceDataFile {}{}", response, e);
+					log.error("exit DeviceDataController.saveDeviceeDataFile {}{}", response, e);
 					responseEntity = new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 				}
 			}
 		} else {
 			response.put(Constants.ERROR_MESSAGE, Constants.INVALID_USER_LOGIN);
-			log.error("exit ServiceDataController.saveServiceDataFile ");
+			log.error("exit DeviceDataController.saveDeviceeDataFile ");
 			responseEntity = new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 		}
 		return responseEntity;
@@ -83,10 +83,10 @@ public class ServiceDataController {
 
 	}
 
-	@PutMapping("/config/service")
-	public ResponseEntity<?> updateServiceDataFile(@RequestParam("file") MultipartFile file,
+	@PutMapping("/config/device")
+	public ResponseEntity<?> updateDeviceDataFile(@RequestParam("file") MultipartFile file,
 			@RequestParam("fileId") long fileId) {
-		log.info("enter ServiceDataController.updateServiceDataFile{},{}", file.getOriginalFilename(), fileId);
+		log.info("enter DeviceDataController.updateDeviceDataFile{},{}", file.getOriginalFilename(), fileId);
 		Map<String, Object> response = new HashMap<>();
 		ResponseEntity<?> responseEntity = null;
 
@@ -98,9 +98,9 @@ public class ServiceDataController {
 				try {
 					byte[] bytes = file.getBytes();
 					if (CsvFileUtil.saveFile(bytes, file.getOriginalFilename())) {
-						if (fileUtil.validateServiceDataHeader(
+						if (fileUtil.validateDeviceDataHeader(
 								Constants.FILE_DESTINATION_FOLDER + file.getOriginalFilename())) {
-							FileData fileData = ConfigUtil.prepareFileDataEntity(bytes, file.getOriginalFilename(),Constants.SERVICE, userInfo.getUserName());
+							FileData fileData = ConfigUtil.prepareFileDataEntity(bytes, file.getOriginalFilename(),Constants.DEVICE, userInfo.getUserName());
 							fileData.setID(fileId);
 							if (fileService.updateFileData(fileData)) {
 								response.put(Constants.SUCCESS_MESSAGE, Constants.FILE_UPDATED_SUCCESFULLY);
@@ -116,25 +116,25 @@ public class ServiceDataController {
 				} catch (Exception e) {
 					e.printStackTrace();
 					response.put(Constants.ERROR_MESSAGE, Constants.FAILED_TO_UPLOAD_FILE);
-					log.error("exit ServiceDataController.updateServiceDataFile {}{}", response, e);
+					log.error("exit DeviceDataController.updateDeviceDataFile {}{}", response, e);
 					responseEntity = new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 				}
 			}
 		} else {
 			response.put(Constants.ERROR_MESSAGE, Constants.INVALID_USER_LOGIN);
-			log.error("exit ServiceDataController.updateServiceDataFile ");
+			log.error("exit DeviceDataController.updateDeviceDataFile ");
 			responseEntity = new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 		}
 		return responseEntity;
 	}
 
-	@DeleteMapping("/config/service")
-	public ResponseEntity<?> deleteServiceDataFile(@RequestParam("fileId") long fileId) {
-		log.info("enter ServiceDataController.deleteServiceDataFile{}", fileId);
+	@DeleteMapping("/config/device")
+	public ResponseEntity<?> deleteDeviceDataFile(@RequestParam("fileId") long fileId) {
+		log.info("enter DeviceDataController.deleteDeviceDataFile{}", fileId);
 		Map<String, Object> response = new HashMap<>();
 		fileService.deleteFileDataById(fileId);
 		response.put(Constants.SUCCESS_MESSAGE, Constants.FILE_DELETED_SUCCESSFULLY);
-		log.info("exit ServiceDataController.deleteServiceDataFile{}");
+		log.info("exit DeviceDataController.deleteDeviceDataFile{}");
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}
