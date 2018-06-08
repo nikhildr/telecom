@@ -79,7 +79,7 @@ public class ServiceDataController {
 	@GetMapping("/config/service")
 	public ResponseEntity<?> getServiceFile() {
 		// to do
-		return null;
+		return new ResponseEntity<>("getservice",HttpStatus.OK);
 
 	}
 

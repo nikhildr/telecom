@@ -76,10 +76,10 @@ public class DeviceDataController {
 		return responseEntity;
 	}
 
-	@GetMapping("/config/service")
-	public ResponseEntity<?> getServiceFile() {
+	@GetMapping("/config/device")
+	public ResponseEntity<?> getDeviceFile() {
 		// to do
-		return null;
+		return new ResponseEntity<>("get device",HttpStatus.OK);
 
 	}
 
