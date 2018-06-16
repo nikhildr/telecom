@@ -1,42 +1,30 @@
 package com.config.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
-import com.config.entity.FileData;
-import com.config.request.UserInfo;
 import com.config.service.FileService;
-import com.config.util.ConfigUtil;
-import com.config.util.Constants;
 import com.config.util.CsvFileUtil;
 
-import lombok.extern.slf4j.Slf4j;
+import ch.qos.logback.classic.Logger;
 
 /**
  * Created by nikhil on 6/2/2018.
  */
 
 @RestController
-@Slf4j
 public class DeviceDataController {
+
 
 	@Autowired
 	private FileService fileService;
 
 	@Autowired
 	private CsvFileUtil fileUtil;
-
+/*
 	@PostMapping("/config/device")
 	public ResponseEntity<?> saveDeviceeDataFile(@RequestParam("file") MultipartFile file) {
 		log.info("enter DeviceDataController.saveDeviceeDataFile{}", file);
@@ -142,6 +130,6 @@ public class DeviceDataController {
 	private boolean validateUser(UserInfo userInfo) {
 		return (userInfo.getUserName().equalsIgnoreCase("admin") && userInfo.getPassword().equalsIgnoreCase("admin123"))
 				? true : false;
-	}
+	}*/
 
 }

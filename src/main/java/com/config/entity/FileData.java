@@ -1,40 +1,77 @@
 package com.config.entity;
 
+import java.io.File;
 import java.sql.Timestamp;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-import lombok.Data;
-
-@Data
-@Entity
-@Table(name = "CONFIG_DATA")
 public class FileData {
 	
 	
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long ID;
-	@Column(name = "USER_NAME", length = 50)
+	private String id;
 	private String userName;
-	@Column(name = "FILE_NAME", length = 250)
 	private String fileName;
-	@Column(name = "DATA",columnDefinition = "BLOB") 
 	private byte[] data;
-	@Column(name = "STATUS", length = 20)
 	private String status;
-	@Column(name = "TYPE", length = 20)
 	private String type;
-	@Column(name = "COMPLETED_TIME")
 	private Timestamp completedTime;
-	@Column(name = "UPDATED_BY", length = 50)
 	private String updatedBy;
-	@Column(name = "UPDATED_TIME")
 	private Timestamp updatedTime;
+	
+	
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public String getUserName() {
+		return userName;
+	}
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+	public String getFileName() {
+		return fileName;
+	}
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+	public byte[] getData() {
+		return data;
+	}
+	public void setData(byte[] data) {
+		this.data = data;
+	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	public Timestamp getCompletedTime() {
+		return completedTime;
+	}
+	public void setCompletedTime(Timestamp completedTime) {
+		this.completedTime = completedTime;
+	}
+	public String getUpdatedBy() {
+		return updatedBy;
+	}
+	public void setUpdatedBy(String updatedBy) {
+		this.updatedBy = updatedBy;
+	}
+	public Timestamp getUpdatedTime() {
+		return updatedTime;
+	}
+	public void setUpdatedTime(Timestamp updatedTime) {
+		this.updatedTime = updatedTime;
+	}
 
+	
+	
 }

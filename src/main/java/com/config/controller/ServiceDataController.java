@@ -3,6 +3,8 @@ package com.config.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,25 +23,25 @@ import com.config.util.ConfigUtil;
 import com.config.util.Constants;
 import com.config.util.CsvFileUtil;
 
-import lombok.extern.slf4j.Slf4j;
-
 /**
  * Created by nikhil on 6/2/2018.
  */
 
 @RestController
-@Slf4j
 public class ServiceDataController {
 
+	
+	private static final Logger log = (Logger) LoggerFactory.getLogger(ServiceDataController.class);
 	@Autowired
 	private FileService fileService;
 
 	@Autowired
 	private CsvFileUtil fileUtil;
 
+	
 	@PostMapping("/config/service")
 	public ResponseEntity<?> saveServiceDataFile(@RequestParam("file") MultipartFile file) {
-		log.info("enter ServiceDataController.saveServiceDataFile{}", file);
+		log.info("enter ServiceDataController.saveServiceDataFile");
 		
 		UserInfo userInfo = new UserInfo(); // temp
 		userInfo.setUserName("admin");
@@ -53,10 +55,10 @@ public class ServiceDataController {
 					if (CsvFileUtil.saveFile(bytes, file.getOriginalFilename())) {
 						if (fileUtil.validateServiceDataHeader(
 								Constants.FILE_DESTINATION_FOLDER + file.getOriginalFilename())) {
-							Long fileDataId = fileService.saveFileData(ConfigUtil.prepareFileDataEntity(bytes,file.getOriginalFilename(), Constants.SERVICE, userInfo.getUserName()));
+							String fileDataId = fileService.saveFileData(ConfigUtil.prepareFileDataEntity(bytes,file.getOriginalFilename(), Constants.SERVICE, userInfo.getUserName()));
 							response.put(Constants.SUCCESS_MESSAGE, Constants.FILE_UPLOADED_SUCCESFULLY);
 							response.put("fileId", fileDataId);
-							log.info("exit ServiceDataController.saveServiceDataFile{}", response);
+							log.info("exit ServiceDataController.saveServiceDataFile{}");
 							responseEntity = new ResponseEntity<>(response, HttpStatus.OK);
 						}
 
@@ -77,15 +79,15 @@ public class ServiceDataController {
 	}
 
 	@GetMapping("/config/service")
-	public ResponseEntity<?> getServiceFile() {
-		// to do
+	public ResponseEntity<?> getServiceFile(@RequestParam("fileId") String fileId) {
+	//	fileService.getFileDataById(fileId);
 		return new ResponseEntity<>("getservice",HttpStatus.OK);
 
 	}
 
 	@PutMapping("/config/service")
 	public ResponseEntity<?> updateServiceDataFile(@RequestParam("file") MultipartFile file,
-			@RequestParam("fileId") long fileId) {
+		@RequestParam("fileId") String fileId) {
 		log.info("enter ServiceDataController.updateServiceDataFile{},{}", file.getOriginalFilename(), fileId);
 		Map<String, Object> response = new HashMap<>();
 		ResponseEntity<?> responseEntity = null;
@@ -101,8 +103,8 @@ public class ServiceDataController {
 						if (fileUtil.validateServiceDataHeader(
 								Constants.FILE_DESTINATION_FOLDER + file.getOriginalFilename())) {
 							FileData fileData = ConfigUtil.prepareFileDataEntity(bytes, file.getOriginalFilename(),Constants.SERVICE, userInfo.getUserName());
-							fileData.setID(fileId);
-							if (fileService.updateFileData(fileData)) {
+							fileData.setId(fileId);
+							if (fileService.updateFileData(fileData) != null) {
 								response.put(Constants.SUCCESS_MESSAGE, Constants.FILE_UPDATED_SUCCESFULLY);
 								response.put("fileId", fileId);
 								log.info("exit ServiceDataController.updateServiceDataFile{}", response);
@@ -128,8 +130,9 @@ public class ServiceDataController {
 		return responseEntity;
 	}
 
+	
 	@DeleteMapping("/config/service")
-	public ResponseEntity<?> deleteServiceDataFile(@RequestParam("fileId") long fileId) {
+	public ResponseEntity<?> deleteServiceDataFile(@RequestParam("fileId") String fileId) {
 		log.info("enter ServiceDataController.deleteServiceDataFile{}", fileId);
 		Map<String, Object> response = new HashMap<>();
 		fileService.deleteFileDataById(fileId);

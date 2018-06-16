@@ -1,8 +1,5 @@
 package com.config.dto;
 
-import lombok.Data;
-
-@Data
 public class DeviceData {
 
 	private String devicename;

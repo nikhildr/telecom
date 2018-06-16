@@ -14,6 +14,10 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 public class TimestampHelper {
+	
+	public static void main(String[] args) {
+		System.out.println(canonicalFormat());
+	}
     public static ZoneOffset getCurrentOffset() {
         return OffsetDateTime.now().getOffset();
     }

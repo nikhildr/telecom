@@ -1,47 +1,37 @@
 package com.config.service;
 
-import java.util.Optional;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.config.controller.ServiceDataController;
 import com.config.entity.FileData;
 import com.config.repositories.FileRepository;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Component
 public class FileService {
 
 	@Autowired
 	public FileRepository fileRepository;
+	
 
-	public long saveFileData(FileData fileData) {
-		return fileRepository.save(fileData).getID();
+	public String saveFileData(FileData fileData) {
+		return fileRepository.insertFile(fileData).getId();
 	}
 
-	public void deleteFileDataById(Long fileId) {
-		fileRepository.deleteById(fileId);
-	}
-
-	public FileData getFileDataById(Long fileId) {
-		Optional<FileData> optionalData = fileRepository.findById(fileId);
-		return optionalData.isPresent() ? optionalData.get() : null;
+	public void deleteFileDataById(String fileId) {
+		fileRepository.deleteBookById(fileId);
 	}
 	
-	public boolean updateFileData(FileData fileData)
-	{
-		FileData dbFileData=getFileDataById(fileData.getID());
-		if(dbFileData!=null)
+	public String updateFileData(FileData fileData) {
+		Map<String, Object> response=fileRepository.updateBookById(fileData.getId(),fileData);
+		if(!response.containsKey("error"))
 		{
-			dbFileData.setData(fileData.getData());
-			dbFileData.setUpdatedTime(fileData.getUpdatedTime());
-			dbFileData.setUpdatedBy(fileData.getUpdatedBy());
-			dbFileData.setFileName(fileData.getFileName());
-		 fileRepository.save(dbFileData);
-		 return true;
+			response.get("");
 		}
-		return false;
+		 return null;
 	}
+
+	 	
+	
 }
