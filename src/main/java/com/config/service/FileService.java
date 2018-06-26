@@ -31,6 +31,12 @@ public class FileService {
 		}
 		 return null;
 	}
+	
+	public FileData getFileDataById(String id)
+	{
+		FileData data=fileRepository.getFileDataById(id);
+		return data;
+	}
 
 	 	
 	

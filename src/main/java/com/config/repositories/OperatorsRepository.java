@@ -1,6 +1,5 @@
 package com.config.repositories;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -18,63 +17,63 @@ import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.config.entity.FileData;
+import com.config.entity.Operators;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Repository
-public class FileRepository {
-
-	    private final String INDEX = "configdata";
-	    private final String TYPE = "filedata";
-
+public class OperatorsRepository {
+	
+	    private final String INDEX = "operators";
+	    private final String TYPE = "user";
+	    
 	    @Autowired
 	    private RestHighLevelClient restHighLevelClient;
 
 	    @Autowired
 	    private ObjectMapper objectMapper;
-
-
-	    public FileData insertFile(FileData data){
-	    	data.setId(UUID.randomUUID().toString());
-	        Map<String, Object> dataMap = objectMapper.convertValue(data, Map.class);
-	        IndexRequest indexRequest = new IndexRequest(INDEX, TYPE, data.getId())
-	                .source(dataMap);
-	        try {
-	            IndexResponse response = restHighLevelClient.index(indexRequest);
-	        } catch(ElasticsearchException e) {
-	            e.getDetailedMessage();
-	        } catch (java.io.IOException ex){
-	            ex.getLocalizedMessage();
-	        }
-	        return data;
+	    
+	    public String addOperator(Operators operator)
+	    {
+	    	operator.setOperatorId(UUID.randomUUID().toString());
+	    	String responseId = null;
+	    	 Map<String, Object> dataMap = objectMapper.convertValue(operator, Map.class);
+		        IndexRequest indexRequest = new IndexRequest(operator.getIndexName(), TYPE, operator.getOperatorId())
+		                .source(dataMap);
+		        try {
+		            IndexResponse response = restHighLevelClient.index(indexRequest);
+		            responseId=response.getId();
+		        } catch(ElasticsearchException e) {
+		            e.getDetailedMessage();
+		        } catch (java.io.IOException ex){
+		            ex.getLocalizedMessage();
+		        }
+		        return responseId;
 	    }
-
-	    public Map<String, Object> updateBookById(String id, FileData book){
-	        UpdateRequest updateRequest = new UpdateRequest(INDEX, TYPE, id)
+	    
+	    public Operators updateOperator( Operators operator){
+	    	Operators response=null;
+	        UpdateRequest updateRequest = new UpdateRequest(operator.getIndexName(), TYPE, operator.getOperatorId())
 	                .fetchSource(true);    // Fetch Object after its update
-	        Map<String, Object> error = new HashMap<>();
-	        error.put("Error", "Unable to update book");
 	        try {
-	            String bookJson = objectMapper.writeValueAsString(book);
-	            updateRequest.doc(bookJson, XContentType.JSON);
+	            String operatorJson = objectMapper.writeValueAsString(operator);
+	            updateRequest.doc(operatorJson, XContentType.JSON);
 	            UpdateResponse updateResponse = restHighLevelClient.update(updateRequest);
-	            Map<String, Object> sourceAsMap = updateResponse.getGetResult().sourceAsMap();
-	            return sourceAsMap;
+	             response= objectMapper.convertValue(updateResponse.getGetResult().sourceAsMap(), Operators.class);
 	        }catch (JsonProcessingException e){
 	            e.getMessage();
 	        } catch (java.io.IOException e){
 	            e.getLocalizedMessage();
 	        }
-	        return error;
+	        return response;
 	    }
-	   public FileData getFileDataById(String id){
+	   public Operators getOperatorById(String id){
 	        GetRequest getRequest = new GetRequest(INDEX, TYPE, id);
 	        GetResponse getResponse = null;
 	        try {
 	            getResponse = restHighLevelClient.get(getRequest);
-	            FileData data= objectMapper.convertValue(getResponse.getSourceAsMap(), FileData.class);
-	            return data;
+	            Operators operator= objectMapper.convertValue(getResponse.getSourceAsMap(), Operators.class);
+	            return operator;
 	        } catch (java.io.IOException e){
 	            e.getLocalizedMessage();
 	        }
@@ -82,7 +81,7 @@ public class FileRepository {
 	    }
 
 	   
-	    public void deleteBookById(String id) {
+	    public void deleteOperatorById(String id) {
 	        DeleteRequest deleteRequest = new DeleteRequest(INDEX, TYPE, id);
 	        try {
 	            DeleteResponse deleteResponse = restHighLevelClient.delete(deleteRequest);
@@ -90,4 +89,6 @@ public class FileRepository {
 	            e.getLocalizedMessage();
 	        }
 	    }
+	
+
 }

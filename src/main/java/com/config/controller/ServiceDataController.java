@@ -80,7 +80,7 @@ public class ServiceDataController {
 
 	@GetMapping("/config/service")
 	public ResponseEntity<?> getServiceFile(@RequestParam("fileId") String fileId) {
-	//	fileService.getFileDataById(fileId);
+		fileService.getFileDataById(fileId);
 		return new ResponseEntity<>("getservice",HttpStatus.OK);
 
 	}
