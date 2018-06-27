@@ -37,17 +37,15 @@ public class OperatorsController {
 	@PutMapping("/config/updateOperator")
 	public ResponseEntity<?> updateOperator(@RequestBody Operators operator) {
 		ResponseEntity<?> responseEntity = null;
-		Operators response = service.updateOperator(operator);
-		if (response != null) {
+		if(service.updateOperator(operator))
 			responseEntity = new ResponseEntity<>("updated successfully", HttpStatus.OK);
-		}
 		return responseEntity;
 	}
 
 	@DeleteMapping("/config/deleteOperator/{id}")
 	public ResponseEntity<?> deleteOperator(@PathVariable String id) {
 		ResponseEntity<?> responseEntity = null;
-		service.deleteOperatorById(id);
+		if(service.deleteOperatorById(id))
 		responseEntity = new ResponseEntity<>("deleted successfully", HttpStatus.OK);
 		return responseEntity;
 	}

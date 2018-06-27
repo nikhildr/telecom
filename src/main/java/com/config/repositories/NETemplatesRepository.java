@@ -17,13 +17,13 @@ import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.config.entity.Operators;
+import com.config.entity.NETemplates;
 import com.config.util.Constants;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Repository
-public class OperatorsRepository {
+public class NETemplatesRepository {
 
 	@Autowired
 	private RestHighLevelClient restHighLevelClient;
@@ -31,14 +31,14 @@ public class OperatorsRepository {
 	@Autowired
 	private ObjectMapper objectMapper;
 
-	private String index = Constants.OPERATORS_INDEX;
-	private String type = Constants.OPERATORS_TYPE;
+	private String index = Constants.NE_TEMPLATE_INDEX;
+	private String type = Constants.NE_TEMPLATE_TYPE;
 
-	public String addOperator(Operators operator) {
-		operator.setOperatorId(UUID.randomUUID().toString());
+	public String addNEtemplate(NETemplates templates) {
+		templates.setTemplateId(UUID.randomUUID().toString());
 		String responseId = null;
-		Map<String, Object> dataMap = objectMapper.convertValue(operator, Map.class);
-		IndexRequest indexRequest = new IndexRequest(index, type, operator.getOperatorId()).source(dataMap);
+		Map<String, Object> dataMap = objectMapper.convertValue(templates, Map.class);
+		IndexRequest indexRequest = new IndexRequest(index, type, templates.getTemplateId()).source(dataMap);
 		try {
 			IndexResponse response = restHighLevelClient.index(indexRequest);
 			responseId = response.getId();
@@ -50,12 +50,12 @@ public class OperatorsRepository {
 		return responseId;
 	}
 
-	public boolean updateOperator(Operators operator) {
-		Operators response = null;
+	public boolean updateNEtemplate(NETemplates template) {
 		boolean status = false;
-		UpdateRequest updateRequest = new UpdateRequest(index, type, operator.getOperatorId()).fetchSource(true);
+		UpdateRequest updateRequest = new UpdateRequest(index, type, template.getTemplateId()).fetchSource(true);
+
 		try {
-			String operatorJson = objectMapper.writeValueAsString(operator);
+			String operatorJson = objectMapper.writeValueAsString(template);
 			updateRequest.doc(operatorJson, XContentType.JSON);
 			UpdateResponse updateResponse = restHighLevelClient.update(updateRequest);
 			if (updateResponse.getId() != null)
@@ -68,22 +68,22 @@ public class OperatorsRepository {
 		return status;
 	}
 
-	public Operators getOperatorById(String id) {
-		GetResponse getResponse = null;
-		Operators operator = null;
+	public NETemplates getNEtemplateById(String id) {
 		GetRequest getRequest = new GetRequest(index, type, id);
+		GetResponse getResponse = null;
 		try {
 			getResponse = restHighLevelClient.get(getRequest);
-			operator = objectMapper.convertValue(getResponse.getSourceAsMap(), Operators.class);
+			NETemplates template = objectMapper.convertValue(getResponse.getSourceAsMap(), NETemplates.class);
+			return template;
 		} catch (java.io.IOException e) {
 			e.getLocalizedMessage();
 		}
-		return operator;
+		return null;
 	}
 
-	public boolean deleteOperatorById(String id) {
-		boolean status = false;
+	public boolean deleteNEtemplateById(String id) {
 		DeleteRequest deleteRequest = new DeleteRequest(index, type, id);
+		boolean status = false;
 		try {
 			DeleteResponse deleteResponse = restHighLevelClient.delete(deleteRequest);
 			if (deleteResponse.getId() != null)

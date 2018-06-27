@@ -19,6 +19,18 @@ public class Constants {
 	public static final String FILE_DELETED_SUCCESSFULLY = "File deleted successfully";
 	public static final String FILE_UPDATED_SUCCESFULLY="File updated successfully";
 	public static final String FAILED_TO_UPDATE_FILE = "Failed to update file";
+	public static final String NE_TEMPLATE_INDEX = "netemplate";
+	public static final String NE_TEMPLATE_TYPE = "template";
+	public static final String NE_NOTIFICATION_INDEX = "nenotification";
+	public static final String NE_NOTIFICATION_TYPE = "notification";
+	public static final String OPERATORS_INDEX = "operators";
+	public static final String OPERATORS_TYPE = "user";
+	public static final String NETWORK_ELEMENT_INDEX = "networkelement";
+	public static final String NETWORK_ELEMENT_TYPE = "network";
+	public static final String NETWORK_DOMAIN_INDEX = "networkdomain";
+	public static final String NETWORK_DOMAIN_TYPE = "domain";
+	public static final String DATA_CENTER_INDEX = "datacenter";
+	public static final String DATA_CENTER_TYPE = "datacenter";
 	public static List<String> getFixedServiceDataHeaders()
 	{
 		List<String> serviceDataHeaders=new ArrayList<>();

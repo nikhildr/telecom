@@ -17,13 +17,13 @@ import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.config.entity.Operators;
+import com.config.entity.NENotifications;
 import com.config.util.Constants;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Repository
-public class OperatorsRepository {
+public class NENotificationsRepository {
 
 	@Autowired
 	private RestHighLevelClient restHighLevelClient;
@@ -31,14 +31,14 @@ public class OperatorsRepository {
 	@Autowired
 	private ObjectMapper objectMapper;
 
-	private String index = Constants.OPERATORS_INDEX;
-	private String type = Constants.OPERATORS_TYPE;
+	private String index = Constants.NE_NOTIFICATION_INDEX;
+	private String type = Constants.NE_NOTIFICATION_TYPE;
 
-	public String addOperator(Operators operator) {
-		operator.setOperatorId(UUID.randomUUID().toString());
+	public String addNEnotification(NENotifications notification) {
+		notification.setNotifId(UUID.randomUUID().toString());
 		String responseId = null;
-		Map<String, Object> dataMap = objectMapper.convertValue(operator, Map.class);
-		IndexRequest indexRequest = new IndexRequest(index, type, operator.getOperatorId()).source(dataMap);
+		Map<String, Object> dataMap = objectMapper.convertValue(notification, Map.class);
+		IndexRequest indexRequest = new IndexRequest(index, type, notification.getNotifId()).source(dataMap);
 		try {
 			IndexResponse response = restHighLevelClient.index(indexRequest);
 			responseId = response.getId();
@@ -50,12 +50,12 @@ public class OperatorsRepository {
 		return responseId;
 	}
 
-	public boolean updateOperator(Operators operator) {
-		Operators response = null;
+	public boolean updateNEnotification(NENotifications notification) {
 		boolean status = false;
-		UpdateRequest updateRequest = new UpdateRequest(index, type, operator.getOperatorId()).fetchSource(true);
+		UpdateRequest updateRequest = new UpdateRequest(index, type, notification.getNotifId()).fetchSource(true);
+
 		try {
-			String operatorJson = objectMapper.writeValueAsString(operator);
+			String operatorJson = objectMapper.writeValueAsString(notification);
 			updateRequest.doc(operatorJson, XContentType.JSON);
 			UpdateResponse updateResponse = restHighLevelClient.update(updateRequest);
 			if (updateResponse.getId() != null)
@@ -68,20 +68,21 @@ public class OperatorsRepository {
 		return status;
 	}
 
-	public Operators getOperatorById(String id) {
-		GetResponse getResponse = null;
-		Operators operator = null;
+	public NENotifications getNeNotificationById(String id) {
 		GetRequest getRequest = new GetRequest(index, type, id);
+		GetResponse getResponse = null;
 		try {
 			getResponse = restHighLevelClient.get(getRequest);
-			operator = objectMapper.convertValue(getResponse.getSourceAsMap(), Operators.class);
+			NENotifications notification = objectMapper.convertValue(getResponse.getSourceAsMap(),
+					NENotifications.class);
+			return notification;
 		} catch (java.io.IOException e) {
 			e.getLocalizedMessage();
 		}
-		return operator;
+		return null;
 	}
 
-	public boolean deleteOperatorById(String id) {
+	public boolean deleteNeNotificationById(String id) {
 		boolean status = false;
 		DeleteRequest deleteRequest = new DeleteRequest(index, type, id);
 		try {

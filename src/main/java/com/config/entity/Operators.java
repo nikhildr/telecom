@@ -4,9 +4,8 @@ import java.sql.Timestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@JsonIgnoreProperties(value = { "indexName" })
 public class Operators {
-	
+
 	private String operatorId;
 	private String name;
 	private String type;
@@ -15,8 +14,6 @@ public class Operators {
 	private String createdBy;
 	private String status;
 	private String updatedBy;
-
-	private String indexName="operators";
 
 	public String getOperatorId() {
 		return operatorId;
@@ -81,12 +78,4 @@ public class Operators {
 	public void setUpdatedBy(String updatedBy) {
 		this.updatedBy = updatedBy;
 	}
-
-	public String getIndexName() {
-		return indexName;
-	}
-
-  	
-	
-
 }

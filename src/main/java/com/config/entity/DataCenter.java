@@ -4,7 +4,6 @@ import java.sql.Timestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@JsonIgnoreProperties(value = { "indexName" })
 public class DataCenter {
 
 
@@ -18,7 +17,6 @@ public class DataCenter {
 	private String updatedBy;
 	private String gateway;
 
-	private String indexName="DataCenter";
 
 	public String getId() {
 		return id;
@@ -91,11 +89,5 @@ public class DataCenter {
 	public void setGateway(String gateway) {
 		this.gateway = gateway;
 	}
-
-	public String getIndexName() {
-		return indexName;
-	}
-	
-	
 	
 }

@@ -17,11 +17,11 @@ public class OperatorsService {
 		return repository.addOperator(operator);
 	}
 
-	public void deleteOperatorById(String operatorId) {
-		repository.deleteOperatorById(operatorId);
+	public boolean deleteOperatorById(String operatorId) {
+		return repository.deleteOperatorById(operatorId);
 	}
 	
-	public Operators updateOperator(Operators operator) {
+	public boolean updateOperator(Operators operator) {
 		return repository.updateOperator(operator);
 	}
 	

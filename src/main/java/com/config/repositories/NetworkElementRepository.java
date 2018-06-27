@@ -17,13 +17,13 @@ import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.config.entity.Operators;
+import com.config.entity.NetworkElement;
 import com.config.util.Constants;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Repository
-public class OperatorsRepository {
+public class NetworkElementRepository {
 
 	@Autowired
 	private RestHighLevelClient restHighLevelClient;
@@ -31,14 +31,14 @@ public class OperatorsRepository {
 	@Autowired
 	private ObjectMapper objectMapper;
 
-	private String index = Constants.OPERATORS_INDEX;
-	private String type = Constants.OPERATORS_TYPE;
+	private String index = Constants.NETWORK_ELEMENT_INDEX;
+	private String type = Constants.NETWORK_ELEMENT_TYPE;
 
-	public String addOperator(Operators operator) {
-		operator.setOperatorId(UUID.randomUUID().toString());
+	public String addNetworkElement(NetworkElement element) {
+		element.setElementId(UUID.randomUUID().toString());
 		String responseId = null;
-		Map<String, Object> dataMap = objectMapper.convertValue(operator, Map.class);
-		IndexRequest indexRequest = new IndexRequest(index, type, operator.getOperatorId()).source(dataMap);
+		Map<String, Object> dataMap = objectMapper.convertValue(element, Map.class);
+		IndexRequest indexRequest = new IndexRequest(index, type, element.getElementId()).source(dataMap);
 		try {
 			IndexResponse response = restHighLevelClient.index(indexRequest);
 			responseId = response.getId();
@@ -50,12 +50,11 @@ public class OperatorsRepository {
 		return responseId;
 	}
 
-	public boolean updateOperator(Operators operator) {
-		Operators response = null;
+	public boolean updateNetworkElement(NetworkElement element) {
 		boolean status = false;
-		UpdateRequest updateRequest = new UpdateRequest(index, type, operator.getOperatorId()).fetchSource(true);
+		UpdateRequest updateRequest = new UpdateRequest(index, type, element.getElementId()).fetchSource(true);
 		try {
-			String operatorJson = objectMapper.writeValueAsString(operator);
+			String operatorJson = objectMapper.writeValueAsString(element);
 			updateRequest.doc(operatorJson, XContentType.JSON);
 			UpdateResponse updateResponse = restHighLevelClient.update(updateRequest);
 			if (updateResponse.getId() != null)
@@ -68,20 +67,20 @@ public class OperatorsRepository {
 		return status;
 	}
 
-	public Operators getOperatorById(String id) {
+	public NetworkElement getNetworkElementById(String id) {
 		GetResponse getResponse = null;
-		Operators operator = null;
+		NetworkElement element = null;
 		GetRequest getRequest = new GetRequest(index, type, id);
 		try {
 			getResponse = restHighLevelClient.get(getRequest);
-			operator = objectMapper.convertValue(getResponse.getSourceAsMap(), Operators.class);
+			element = objectMapper.convertValue(getResponse.getSourceAsMap(), NetworkElement.class);
 		} catch (java.io.IOException e) {
 			e.getLocalizedMessage();
 		}
-		return operator;
+		return element;
 	}
 
-	public boolean deleteOperatorById(String id) {
+	public boolean deleteNetworkElementById(String id) {
 		boolean status = false;
 		DeleteRequest deleteRequest = new DeleteRequest(index, type, id);
 		try {
