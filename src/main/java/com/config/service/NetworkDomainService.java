@@ -13,19 +13,19 @@ public class NetworkDomainService {
 	public NetworkDomainRepository repository;
 	
 
-	public String addNetworkElement(NetworkDomain networkDomain) {
+	public String addNetworkDomain(NetworkDomain networkDomain) {
 		return repository.addNetworkDomain(networkDomain);
 	}
 
-	public boolean deleteNetworkElementById(String id) {
+	public boolean deleteNetworkDomainById(String id) {
 		return repository.deleteNetworkDomainById(id);
 	}
 	
-	public boolean updateNetworkElement(NetworkDomain networkDomain) {
+	public boolean updateNetworkDomain(NetworkDomain networkDomain) {
 		return repository.updateNetworkDomain(networkDomain);
 	}
 	
-	public NetworkDomain getNetworkElementById(String id)
+	public NetworkDomain getNetworkDomainById(String id)
 	{
 		return repository.getNetworkDomainById(id);
 	}

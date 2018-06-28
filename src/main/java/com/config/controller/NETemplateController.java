@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.config.service.FileService;
+import com.config.service.NETemplateService;
 import com.config.util.CsvFileUtil;
 
 import ch.qos.logback.classic.Logger;
@@ -16,11 +17,12 @@ import ch.qos.logback.classic.Logger;
  */
 
 @RestController
-public class DeviceDataController {
+public class NETemplateController {
 
 
 	@Autowired
 	private FileService fileService;
+	private NETemplateService templateService;
 
 	@Autowired
 	private CsvFileUtil fileUtil;

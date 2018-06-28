@@ -12,19 +12,19 @@ public class NENotifcationService {
 	@Autowired
 	public NENotificationsRepository repository;
 
-	public String addNEtemplate(NENotifications notification) {
+	public String addNENotification(NENotifications notification) {
 		return repository.addNEnotification(notification);
 	}
 
-	public boolean deleteNEtemplateById(String id) {
+	public boolean deleteNENotificationById(String id) {
 		return repository.deleteNeNotificationById(id);
 	}
 
-	public boolean updateNEtemplate(NENotifications notification) {
+	public boolean updateNENotification(NENotifications notification) {
 		return repository.updateNEnotification(notification);
 	}
 
-	public NENotifications getNEtemplateById(String id) {
+	public NENotifications getNENotificationById(String id) {
 		return repository.getNeNotificationById(id);
 	}
 
