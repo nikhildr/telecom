@@ -2,11 +2,8 @@ package com.config.entity;
 
 import java.sql.Timestamp;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-@JsonIgnoreProperties(value = { "indexName" })
 public class NetworkDomain {
-	
+
 	private String id;
 	private String name;
 	private String status;
@@ -17,8 +14,6 @@ public class NetworkDomain {
 	private String addressRange;
 	private String updatedBy;
 	private String gateway;
-
-	private String indexName="NetworkDomain";
 
 	public String getId() {
 		return id;
@@ -99,13 +94,5 @@ public class NetworkDomain {
 	public void setGateway(String gateway) {
 		this.gateway = gateway;
 	}
-
-	public String getIndexName() {
-		return indexName;
-	}
-
-	
-	
-	
 
 }

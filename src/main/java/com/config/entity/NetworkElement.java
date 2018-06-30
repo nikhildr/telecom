@@ -2,8 +2,6 @@ package com.config.entity;
 
 import java.sql.Timestamp;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 public class NetworkElement {
 	
 	private String elementId;
@@ -25,6 +23,7 @@ public class NetworkElement {
 	private String userId;
 	private String password;
 	private String sshKey;
+	
 	public String getElementId() {
 		return elementId;
 	}

@@ -6,16 +6,14 @@ public class NENotifications {
 
 	private String notifId;
 	private String type;
-	private String notifObject	;
-	private String notifCause	;
-	private String status	;
-	private String affectedService	;
+	private String notifObject;
+	private String notifCause;
+	private String status;
+	private String affectedService;
 	private Timestamp cDate;
 	private Timestamp updateDate;
 	private String createdBy;
 	private String updatedBy;
-
-	private String indexName="NENotifications";
 
 	public String getNotifId() {
 		return notifId;
@@ -97,10 +95,4 @@ public class NENotifications {
 		this.updatedBy = updatedBy;
 	}
 
-	public String getIndexName() {
-		return indexName;
-	}
-	
-	
-	
 }

@@ -4,7 +4,6 @@ import java.sql.Timestamp;
 
 public class DataCenter {
 
-
 	private String id;
 	private String name;
 	private String status;
@@ -14,7 +13,6 @@ public class DataCenter {
 	private String createdBy;
 	private String updatedBy;
 	private String gateway;
-
 
 	public String getId() {
 		return id;
@@ -87,5 +85,5 @@ public class DataCenter {
 	public void setGateway(String gateway) {
 		this.gateway = gateway;
 	}
-	
+
 }
