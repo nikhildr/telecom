@@ -15,7 +15,7 @@ public class Constants {
 	public static final String ERROR_MESSAGE="errorMessage";
 	public static final String INVALID_USER_LOGIN="Invalid login";
 	public static final String SPACE_REGEX="\\s+";
-	public static final String FILE_DESTINATION_FOLDER = "D://xlsupload//";
+	public static final String FILE_DESTINATION_FOLDER = "D://output//";
 	public static final String FILE_DELETED_SUCCESSFULLY = "File deleted successfully";
 	public static final String FILE_UPDATED_SUCCESFULLY="File updated successfully";
 	public static final String FAILED_TO_UPDATE_FILE = "Failed to update file";

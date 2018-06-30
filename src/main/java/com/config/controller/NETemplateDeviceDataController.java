@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.config.entity.FileData;
+import com.config.entity.NETemplates;
 import com.config.request.UserInfo;
-import com.config.service.FileService;
+import com.config.service.NETemplateService;
 import com.config.util.ConfigUtil;
 import com.config.util.Constants;
 import com.config.util.CsvFileUtil;
@@ -28,20 +28,19 @@ import com.config.util.CsvFileUtil;
  */
 
 @RestController
-public class ServiceDataController {
+public class NETemplateDeviceDataController {
 
-	
-	private static final Logger log = (Logger) LoggerFactory.getLogger(ServiceDataController.class);
+	private static final Logger log = (Logger) LoggerFactory.getLogger(NETemplateDeviceDataController.class);
+
 	@Autowired
-	private FileService fileService;
+	private NETemplateService templateService;
 
 	@Autowired
 	private CsvFileUtil fileUtil;
 
-	
-	@PostMapping("/config/service")
-	public ResponseEntity<?> saveServiceDataFile(@RequestParam("file") MultipartFile file) {
-		log.info("enter ServiceDataController.saveServiceDataFile");
+	@PostMapping("netemplate/config/device")
+	public ResponseEntity<?> addNETempalateData(@RequestParam("file") MultipartFile file) {
+		log.info("enter NETemplateDeviceDataController.addNETempalateData{}", file);
 		
 		UserInfo userInfo = new UserInfo(); // temp
 		userInfo.setUserName("admin");
@@ -53,12 +52,12 @@ public class ServiceDataController {
 				try {
 					byte[] bytes = file.getBytes();
 					if (CsvFileUtil.saveFile(bytes, file.getOriginalFilename())) {
-						if (fileUtil.validateServiceDataHeader(
+						if (fileUtil.validateDeviceDataHeader(
 								Constants.FILE_DESTINATION_FOLDER + file.getOriginalFilename())) {
-							String fileDataId = fileService.saveFileData(ConfigUtil.prepareFileDataEntity(bytes,file.getOriginalFilename(), Constants.SERVICE, userInfo.getUserName()));
+							String templateId = templateService.addNEtemplate(ConfigUtil.prepareNETemplateEntity(bytes,file.getOriginalFilename(), Constants.DEVICE, userInfo.getUserName()));
 							response.put(Constants.SUCCESS_MESSAGE, Constants.FILE_UPLOADED_SUCCESFULLY);
-							response.put("fileId", fileDataId);
-							log.info("exit ServiceDataController.saveServiceDataFile{}");
+							response.put("templateId", templateId);
+							log.info("exit DeviceDataController.saveDeviceeDataFile{}", response);
 							responseEntity = new ResponseEntity<>(response, HttpStatus.OK);
 						}
 
@@ -66,29 +65,29 @@ public class ServiceDataController {
 				} catch (Exception e) {
 					e.printStackTrace();
 					response.put(Constants.ERROR_MESSAGE, Constants.FAILED_TO_UPLOAD_FILE);
-					log.error("exit ServiceDataController.saveServiceDataFile {}{}", response, e);
+					log.error("exit DeviceDataController.saveDeviceeDataFile {}{}", response, e);
 					responseEntity = new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 				}
 			}
 		} else {
 			response.put(Constants.ERROR_MESSAGE, Constants.INVALID_USER_LOGIN);
-			log.error("exit ServiceDataController.saveServiceDataFile ");
+			log.error("exit DeviceDataController.saveDeviceeDataFile ");
 			responseEntity = new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 		}
 		return responseEntity;
 	}
 
-	@GetMapping("/config/service")
-	public ResponseEntity<?> getServiceFile(@RequestParam("fileId") String fileId) {
-		fileService.getFileDataById(fileId);
-		return new ResponseEntity<>("getservice",HttpStatus.OK);
+	@GetMapping("netemplate/config/device")
+	public ResponseEntity<?> getNETemplateDevice() {
+		// to do
+		return new ResponseEntity<>("get device",HttpStatus.OK);
 
 	}
 
-	@PutMapping("/config/service")
-	public ResponseEntity<?> updateServiceDataFile(@RequestParam("file") MultipartFile file,
-		@RequestParam("fileId") String fileId) {
-		log.info("enter ServiceDataController.updateServiceDataFile{},{}", file.getOriginalFilename(), fileId);
+	@PutMapping("netemplate/config/device")
+	public ResponseEntity<?> updateNETemplateDevice(@RequestParam("file") MultipartFile file,
+			@RequestParam("templateId") String templateId) {
+		log.info("enter NETemplateDeviceDataController.updateNETemplateDevice{},{}", file.getOriginalFilename(), templateId);
 		Map<String, Object> response = new HashMap<>();
 		ResponseEntity<?> responseEntity = null;
 
@@ -100,14 +99,14 @@ public class ServiceDataController {
 				try {
 					byte[] bytes = file.getBytes();
 					if (CsvFileUtil.saveFile(bytes, file.getOriginalFilename())) {
-						if (fileUtil.validateServiceDataHeader(
+						if (fileUtil.validateDeviceDataHeader(
 								Constants.FILE_DESTINATION_FOLDER + file.getOriginalFilename())) {
-							FileData fileData = ConfigUtil.prepareFileDataEntity(bytes, file.getOriginalFilename(),Constants.SERVICE, userInfo.getUserName());
-							fileData.setId(fileId);
-							if (fileService.updateFileData(fileData) != null) {
+							NETemplates template = ConfigUtil.prepareNETemplateEntity(bytes, file.getOriginalFilename(),Constants.DEVICE, userInfo.getUserName());
+							template.setTemplateId(templateId);
+							if (templateService.updateNEtemplate(template)) {
 								response.put(Constants.SUCCESS_MESSAGE, Constants.FILE_UPDATED_SUCCESFULLY);
-								response.put("fileId", fileId);
-								log.info("exit ServiceDataController.updateServiceDataFile{}", response);
+								response.put("templateId", templateId);
+								log.info("exit NETemplateDeviceDataController.updateNETemplateDevice{}", response);
 								responseEntity = new ResponseEntity<>(response, HttpStatus.OK);
 							} else {
 								response.put(Constants.ERROR_MESSAGE, Constants.FAILED_TO_UPDATE_FILE);
@@ -118,26 +117,25 @@ public class ServiceDataController {
 				} catch (Exception e) {
 					e.printStackTrace();
 					response.put(Constants.ERROR_MESSAGE, Constants.FAILED_TO_UPLOAD_FILE);
-					log.error("exit ServiceDataController.updateServiceDataFile {}{}", response, e);
+					log.error("exit NETemplateDeviceDataController.updateNETemplateDevice {}{}", response, e);
 					responseEntity = new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 				}
 			}
 		} else {
 			response.put(Constants.ERROR_MESSAGE, Constants.INVALID_USER_LOGIN);
-			log.error("exit ServiceDataController.updateServiceDataFile ");
+			log.error("exit NETemplateDeviceDataController.updateNETemplateDevice ");
 			responseEntity = new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 		}
 		return responseEntity;
 	}
 
-	
-	@DeleteMapping("/config/service")
-	public ResponseEntity<?> deleteServiceDataFile(@RequestParam("fileId") String fileId) {
-		log.info("enter ServiceDataController.deleteServiceDataFile{}", fileId);
+	@DeleteMapping("/config/device")
+	public ResponseEntity<?> deleteNETemplateDevice(@RequestParam("templateId") String templateId) {
+		log.info("enter NETemplateDeviceDataController.deleteNETemplateDevice{}", templateId);
 		Map<String, Object> response = new HashMap<>();
-		fileService.deleteFileDataById(fileId);
+		templateService.deleteNEtemplateById(templateId);
 		response.put(Constants.SUCCESS_MESSAGE, Constants.FILE_DELETED_SUCCESSFULLY);
-		log.info("exit ServiceDataController.deleteServiceDataFile{}");
+		log.info("exit NETemplateDeviceDataController.deleteNETemplateDevice{}");
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}

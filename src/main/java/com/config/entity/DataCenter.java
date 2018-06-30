@@ -2,8 +2,6 @@ package com.config.entity;
 
 import java.sql.Timestamp;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 public class DataCenter {
 
 
