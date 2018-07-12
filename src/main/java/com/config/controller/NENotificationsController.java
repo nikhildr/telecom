@@ -1,5 +1,7 @@
 package com.config.controller;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +55,14 @@ public class NENotificationsController {
 	public ResponseEntity<?> getNENotification(@PathVariable String id) {
 		ResponseEntity<?> responseEntity = null;
 		NENotifications notifications = service.getNENotificationById(id);
+		responseEntity = new ResponseEntity<>(notifications, HttpStatus.OK);
+		return responseEntity;
+	}
+	
+	@GetMapping("/config/nenotifcation/excel")
+	public ResponseEntity<?> downloadNENotificationExcel() {
+		ResponseEntity<?> responseEntity = null;
+		List<NENotifications> notifications = service.getAllNENotifications();
 		responseEntity = new ResponseEntity<>(notifications, HttpStatus.OK);
 		return responseEntity;
 	}

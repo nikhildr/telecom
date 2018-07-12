@@ -1,5 +1,7 @@
 package com.config.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -28,4 +30,9 @@ public class NENotifcationService {
 		return repository.getNeNotificationById(id);
 	}
 
+	public List<NENotifications> getAllNENotifications()
+	{
+		return repository.getAllNeNotifications();
+		
+	}
 }

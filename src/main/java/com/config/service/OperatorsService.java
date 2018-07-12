@@ -1,8 +1,11 @@
 package com.config.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.config.entity.NENotifications;
 import com.config.entity.Operators;
 import com.config.repositories.OperatorsRepository;
 
@@ -28,6 +31,10 @@ public class OperatorsService {
 	public Operators getOperatorById(String operatorId)
 	{
 		return repository.getOperatorById(operatorId);
+	}
+
+	public List<Operators> getAllOperators() {
+		return repository.getAllOperatos();
 	}
 
 

@@ -1,5 +1,6 @@
 package com.config.repositories;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -93,6 +94,20 @@ public class NENotificationsRepository {
 			e.getLocalizedMessage();
 		}
 		return status;
+	}
+
+	public List<NENotifications> getAllNeNotifications() {
+		GetRequest getRequest = new GetRequest(index);
+		GetResponse getResponse = null;
+		try {
+			getResponse = restHighLevelClient.get(getRequest);
+			List<NENotifications> list = (List<NENotifications>) objectMapper.convertValue(getResponse.getSourceAsMap(),
+					NENotifications.class);
+			return list;
+		} catch (java.io.IOException e) {
+			e.getLocalizedMessage();
+		}
+		return null;
 	}
 
 }

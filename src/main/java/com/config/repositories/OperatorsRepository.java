@@ -1,5 +1,8 @@
 package com.config.repositories;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -16,6 +19,7 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.client.RestTemplate;
 
 import com.config.entity.Operators;
 import com.config.util.Constants;
@@ -92,6 +96,31 @@ public class OperatorsRepository {
 			e.getLocalizedMessage();
 		}
 		return status;
+	}
+
+	public List<Operators> getAllOperatos() {
+		List<Operators> operators = new ArrayList<>();
+		RestTemplate restTemplate = new RestTemplate();
+        Object response =  restTemplate.getForObject("http://localhost:9200/operators/_search?pretty=true", Object.class);
+        if(response !=null && response instanceof LinkedHashMap<?, ?> )
+        {
+        	LinkedHashMap<?, ?> map=objectMapper.convertValue(response, LinkedHashMap.class);
+        	LinkedHashMap<?,?> hits=(LinkedHashMap<?, ?>) map.get("hits");
+        	int hitsSize=(int) hits.get("total");
+        	if(hitsSize >0 )
+        	{
+        		List<?> hitsArray=(List<?>) hits.get("hits");
+        		for (Object object : hitsArray) {
+        			LinkedHashMap<?, ?> hitsMap=(LinkedHashMap<?, ?>) object;
+        			Operators operator = null;
+					if(hitsMap.containsKey("_source") && hitsMap.get("_source") !=null)
+        				operator=(Operators)objectMapper.convertValue(hitsMap.get("_source"), Operators.class);
+        				operators.add(operator);
+        		}        		
+        	}
+        }
+       
+		return operators;
 	}
 
 }
