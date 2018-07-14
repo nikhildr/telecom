@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,7 +39,7 @@ public class NETemplateDeviceDataController {
 	@Autowired
 	private CsvFileUtil fileUtil;
 
-	@PostMapping("netemplate/config/device")
+	@PostMapping("config/netemplate/device")
 	public ResponseEntity<?> addNETempalateData(@RequestParam("file") MultipartFile file) {
 		log.info("enter NETemplateDeviceDataController.addNETempalateData{}", file);
 		
@@ -77,17 +78,16 @@ public class NETemplateDeviceDataController {
 		return responseEntity;
 	}
 
-	@GetMapping("netemplate/config/device")
+	@GetMapping("config/netemplate/device")
 	public ResponseEntity<?> getNETemplateDevice() {
 		// to do
 		return new ResponseEntity<>("get device",HttpStatus.OK);
 
 	}
 
-	@PutMapping("netemplate/config/device")
+	@PutMapping("config/netemplate/device/{id}")
 	public ResponseEntity<?> updateNETemplateDevice(@RequestParam("file") MultipartFile file,
-			@RequestParam("templateId") String templateId) {
-		log.info("enter NETemplateDeviceDataController.updateNETemplateDevice{},{}", file.getOriginalFilename(), templateId);
+			@PathVariable String id) {
 		Map<String, Object> response = new HashMap<>();
 		ResponseEntity<?> responseEntity = null;
 
@@ -102,10 +102,10 @@ public class NETemplateDeviceDataController {
 						if (fileUtil.validateDeviceDataHeader(
 								Constants.FILE_DESTINATION_FOLDER + file.getOriginalFilename())) {
 							NETemplates template = ConfigUtil.prepareNETemplateEntity(bytes, file.getOriginalFilename(),Constants.DEVICE, userInfo.getUserName());
-							template.setTemplateId(templateId);
+							template.setTemplateId(id);
 							if (templateService.updateNEtemplate(template)) {
 								response.put(Constants.SUCCESS_MESSAGE, Constants.FILE_UPDATED_SUCCESFULLY);
-								response.put("templateId", templateId);
+								response.put("templateId", id);
 								log.info("exit NETemplateDeviceDataController.updateNETemplateDevice{}", response);
 								responseEntity = new ResponseEntity<>(response, HttpStatus.OK);
 							} else {
@@ -129,7 +129,7 @@ public class NETemplateDeviceDataController {
 		return responseEntity;
 	}
 
-	@DeleteMapping("/config/device")
+	@DeleteMapping("config/netemplate/device/{id}")
 	public ResponseEntity<?> deleteNETemplateDevice(@RequestParam("templateId") String templateId) {
 		log.info("enter NETemplateDeviceDataController.deleteNETemplateDevice{}", templateId);
 		Map<String, Object> response = new HashMap<>();

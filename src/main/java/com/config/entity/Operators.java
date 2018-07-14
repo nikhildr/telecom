@@ -2,6 +2,7 @@ package com.config.entity;
 
 import java.sql.Timestamp;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -12,6 +13,7 @@ public class Operators {
 	private String name;
 	private String type;
 	private String password;
+	//@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	private Timestamp cDate;
 	private String createdBy;
 	private String status;

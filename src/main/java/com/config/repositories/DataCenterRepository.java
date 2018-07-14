@@ -1,8 +1,8 @@
 package com.config.repositories;
 
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
+import com.config.entity.NENotifications;
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -15,6 +15,7 @@ import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Repository;
 
 import com.config.entity.DataCenter;
@@ -22,6 +23,7 @@ import com.config.entity.DataCenter;
 import com.config.util.Constants;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.web.client.RestTemplate;
 
 @Repository
 public class DataCenterRepository {
@@ -31,6 +33,9 @@ public class DataCenterRepository {
 
 	@Autowired
 	private ObjectMapper objectMapper;
+
+    @Autowired
+    private Environment env;
 
 	private String index = Constants.DATA_CENTER_INDEX;
 	private String type = Constants.DATA_CENTER_TYPE;
@@ -51,9 +56,9 @@ public class DataCenterRepository {
 		return responseId;
 	}
 
-	public boolean updateDataCenter(DataCenter dataCenter) {
+	public boolean updateDataCenter(String id,DataCenter dataCenter) {
 		boolean status = false;
-		UpdateRequest updateRequest = new UpdateRequest(index, type, dataCenter.getId()).fetchSource(true);
+		UpdateRequest updateRequest = new UpdateRequest(index, type, id).fetchSource(true);
 
 		try {
 			String operatorJson = objectMapper.writeValueAsString(dataCenter);
@@ -95,4 +100,26 @@ public class DataCenterRepository {
 		return status;
 	}
 
+    public List<DataCenter> getAllDataCenters() {
+        List<DataCenter> dataCenters = new ArrayList<>();
+        String url = env.getProperty("elasticsearch.url") + index + Constants.SEARCH;
+        RestTemplate restTemplate = new RestTemplate();
+        Object response = restTemplate.getForObject(url, Object.class);
+        if (response != null && response instanceof LinkedHashMap<?, ?>) {
+            LinkedHashMap<?, ?> map = objectMapper.convertValue(response, LinkedHashMap.class);
+            LinkedHashMap<?, ?> hits = (LinkedHashMap<?, ?>) map.get("hits");
+            int hitsSize = (Integer) hits.get("total");
+            if (hitsSize > 0) {
+                List<?> hitsArray = (List<?>) hits.get("hits");
+                for (Object object : hitsArray) {
+                    LinkedHashMap<?, ?> hitsMap = (LinkedHashMap<?, ?>) object;
+                    DataCenter neNotifications = null;
+                    if (hitsMap.containsKey("_source") && hitsMap.get("_source") != null)
+                        neNotifications = (DataCenter) objectMapper.convertValue(hitsMap.get("_source"), DataCenter.class);
+                    dataCenters.add(neNotifications);
+                }
+            }
+        }
+        return dataCenters;
+    }
 }

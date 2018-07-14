@@ -1,8 +1,9 @@
 package com.config.repositories;
 
-import java.util.Map;
-import java.util.UUID;
-
+import com.config.entity.NetworkDomain;
+import com.config.util.Constants;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -15,12 +16,11 @@ import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.client.RestTemplate;
 
-import com.config.entity.NetworkDomain;
-import com.config.util.Constants;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.*;
 
 @Repository
 public class NetworkDomainRepository {
@@ -30,6 +30,9 @@ public class NetworkDomainRepository {
 
 	@Autowired
 	private ObjectMapper objectMapper;
+
+    @Autowired
+    private Environment env;
 
 	private String index = Constants.NETWORK_DOMAIN_INDEX;
 	private String type = Constants.NETWORK_DOMAIN_TYPE;
@@ -50,10 +53,10 @@ public class NetworkDomainRepository {
 		return responseId;
 	}
 
-	public boolean updateNetworkDomain(NetworkDomain domain) {
+	public boolean updateNetworkDomain(String id,NetworkDomain domain) {
 		boolean status = false;
 		;
-		UpdateRequest updateRequest = new UpdateRequest(index, type, domain.getId()).fetchSource(true);
+		UpdateRequest updateRequest = new UpdateRequest(index, type, id).fetchSource(true);
 		try {
 			String operatorJson = objectMapper.writeValueAsString(domain);
 			updateRequest.doc(operatorJson, XContentType.JSON);
@@ -94,4 +97,26 @@ public class NetworkDomainRepository {
 		return status;
 	}
 
-}
+    public List<NetworkDomain> getAllNetowrkDomains() {
+            List<NetworkDomain> elements = new ArrayList<>();
+            String url = env.getProperty("elasticsearch.url") + index + Constants.SEARCH;
+            RestTemplate restTemplate = new RestTemplate();
+            Object response = restTemplate.getForObject(url, Object.class);
+            if (response != null && response instanceof LinkedHashMap<?, ?>) {
+                LinkedHashMap<?, ?> map = objectMapper.convertValue(response, LinkedHashMap.class);
+                LinkedHashMap<?, ?> hits = (LinkedHashMap<?, ?>) map.get("hits");
+                int hitsSize = (Integer) hits.get("total");
+                if (hitsSize > 0) {
+                    List<?> hitsArray = (List<?>) hits.get("hits");
+                    for (Object object : hitsArray) {
+                        LinkedHashMap<?, ?> hitsMap = (LinkedHashMap<?, ?>) object;
+                        NetworkDomain networkDomain = null;
+                        if (hitsMap.containsKey("_source") && hitsMap.get("_source") != null)
+                            networkDomain = (NetworkDomain) objectMapper.convertValue(hitsMap.get("_source"), NetworkDomain.class);
+                        elements.add(networkDomain);
+                    }
+                }
+            }
+            return elements;
+        }
+    }

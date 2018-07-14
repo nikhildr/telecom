@@ -22,8 +22,8 @@ public class NENotifcationService {
 		return repository.deleteNeNotificationById(id);
 	}
 
-	public boolean updateNENotification(NENotifications notification) {
-		return repository.updateNEnotification(notification);
+	public boolean updateNENotification(String id,NENotifications notification) {
+		return repository.updateNEnotification(id,notification);
 	}
 
 	public NENotifications getNENotificationById(String id) {

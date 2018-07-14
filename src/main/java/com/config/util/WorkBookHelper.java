@@ -1,5 +1,10 @@
 package com.config.util;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -10,16 +15,11 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
 
 public class WorkBookHelper {
 	
-	
-	public static <T> void writeToExcel(String fileName, List<T> data) {
+
+	public static  <T> boolean writeToExcel(String fileName, List<T> data) {
 		OutputStream fos = null;
 		XSSFWorkbook workbook = null;
 		try {
@@ -67,8 +67,10 @@ public class WorkBookHelper {
 			fos = new FileOutputStream(file);
 			workbook.write(fos);
 			fos.flush();
+			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
+			return false;
 		} finally {
 			try {
 				if (fos != null) {

@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 import com.config.entity.DataCenter;
 import com.config.repositories.DataCenterRepository;
 
+import java.util.List;
+
 @Component
 public class DataCenterService {
 
@@ -20,12 +22,14 @@ public class DataCenterService {
 		return repository.deleteDataCenterById(id);
 	}
 
-	public boolean updateDataCenter(DataCenter operator) {
-		return repository.updateDataCenter(operator);
+	public boolean updateDataCenter(String id,DataCenter operator) {
+		return repository.updateDataCenter(id,operator);
 	}
 
 	public DataCenter getDataCenterById(String id) {
 		return repository.getDataCenterById(id);
 	}
+
+	public List<DataCenter> getAllDataCenters(){ return repository.getAllDataCenters();}
 
 }

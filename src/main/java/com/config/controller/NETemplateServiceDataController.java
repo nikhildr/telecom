@@ -1,6 +1,5 @@
 package com.config.controller;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
@@ -13,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,7 +42,7 @@ public class NETemplateServiceDataController {
 	private CsvFileUtil fileUtil;
 
 	
-	@PostMapping("netemplate/config/service")
+	@PostMapping("config/netemplate/service")
 	public ResponseEntity<?> addNETempalateService(@RequestParam("file") MultipartFile file) {
 		log.info("enter ServiceDataController.saveServiceDataFile");
 		
@@ -81,7 +81,7 @@ public class NETemplateServiceDataController {
 		return responseEntity;
 	}
 
-	@GetMapping("netemplate/config/service")
+	@GetMapping("config/netemplate/service")
 	public ResponseEntity<?> getNETemplateService(@RequestParam("templateId") String templateId) throws IOException {
 		NETemplates template=templateService.getNEtemplateById(templateId);
 			    FileOutputStream fileOuputStream = new FileOutputStream(Constants.FILE_DESTINATION_FOLDER+"testfile.csv"); 
@@ -90,10 +90,10 @@ public class NETemplateServiceDataController {
 
 	}
 
-	@PutMapping("netemplate/config/service")
+	@PutMapping("config/netemplate/service/{id}")
 	public ResponseEntity<?> updateNETemplateService(@RequestParam("file") MultipartFile file,
-		@RequestParam("templateId") String templateId) {
-		log.info("enter ServiceDataController.updateServiceDataFile{},{}", file.getOriginalFilename(), templateId);
+			@PathVariable String id) {
+		log.info("enter ServiceDataController.updateServiceDataFile{},{}", file.getOriginalFilename(), id);
 		Map<String, Object> response = new HashMap<>();
 		ResponseEntity<?> responseEntity = null;
 
@@ -108,10 +108,10 @@ public class NETemplateServiceDataController {
 						if (fileUtil.validateServiceDataHeader(
 								Constants.FILE_DESTINATION_FOLDER + file.getOriginalFilename())) {
 							NETemplates template = ConfigUtil.prepareNETemplateEntity(bytes, file.getOriginalFilename(),Constants.SERVICE, userInfo.getUserName());
-							template.setTemplateId(templateId);
+							template.setTemplateId(id);
 							if (templateService.updateNEtemplate(template)) {
 								response.put(Constants.SUCCESS_MESSAGE, Constants.FILE_UPDATED_SUCCESFULLY);
-								response.put("templateId", templateId);
+								response.put("templateId", id);
 								log.info("exit ServiceDataController.updateServiceDataFile{}", response);
 								responseEntity = new ResponseEntity<>(response, HttpStatus.OK);
 							} else {
@@ -136,11 +136,11 @@ public class NETemplateServiceDataController {
 	}
 
 	
-	@DeleteMapping("netemplate/config/service")
-	public ResponseEntity<?> deleteNETemplateServiceFile(@RequestParam("templateId") String templateId) {
-		log.info("enter ServiceDataController.deleteServiceDataFile{}", templateId);
+	@DeleteMapping("config/netemplate/service/{id}")
+	public ResponseEntity<?> deleteNETemplateServiceFile(@PathVariable String id) {
+		log.info("enter ServiceDataController.deleteServiceDataFile{}", id);
 		Map<String, Object> response = new HashMap<>();
-		templateService.deleteNEtemplateById(templateId);
+		templateService.deleteNEtemplateById(id);
 		response.put(Constants.SUCCESS_MESSAGE, Constants.FILE_DELETED_SUCCESSFULLY);
 		log.info("exit ServiceDataController.deleteServiceDataFile{}");
 		return new ResponseEntity<>(response, HttpStatus.OK);

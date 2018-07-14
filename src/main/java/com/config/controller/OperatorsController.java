@@ -3,6 +3,7 @@ package com.config.controller;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.sql.Timestamp;
 import java.util.List;
 
 import javax.servlet.ServletContext;
@@ -41,11 +42,11 @@ public class OperatorsController {
 	@Autowired
 	private ServletContext servletContext;
 
-	@PostMapping("/config/addOperator")
+	@PostMapping("/config/operators")
 	public ResponseEntity<?> addOperator(@RequestBody Operators operator) {
 		log.info("enter OperatorsController.addOperator{}", operator);
 		ResponseEntity<?> responseEntity = null;
-		operator.setcDate(TimestampHelper.getCurrentTimestamp());
+		//operator.setcDate((Timestamp)operator.getcDate());
 		String response = service.addOperator(operator);
 		if (response != null) {
 			responseEntity = new ResponseEntity<>(response, HttpStatus.OK);
@@ -53,15 +54,15 @@ public class OperatorsController {
 		return responseEntity;
 	}
 
-	@PutMapping("/config/updateOperator")
-	public ResponseEntity<?> updateOperator(@RequestBody Operators operator) {
+	@PutMapping("/config/operators/{id}")
+	public ResponseEntity<?> updateOperator(@RequestBody Operators operator,@PathVariable String id) {
 		ResponseEntity<?> responseEntity = null;
-		if (service.updateOperator(operator))
+		if (service.updateOperator(id,operator))
 			responseEntity = new ResponseEntity<>("updated successfully", HttpStatus.OK);
 		return responseEntity;
 	}
 
-	@DeleteMapping("/config/deleteOperator/{id}")
+	@DeleteMapping("/config/operators/{id}")
 	public ResponseEntity<?> deleteOperator(@PathVariable String id) {
 		ResponseEntity<?> responseEntity = null;
 		if (service.deleteOperatorById(id))
@@ -69,7 +70,7 @@ public class OperatorsController {
 		return responseEntity;
 	}
 
-	@GetMapping("/config/getOperator/{id}")
+	@GetMapping("/config/operators/{id}")
 	public ResponseEntity<?> getOperator(@PathVariable String id) {
 		ResponseEntity<?> responseEntity = null;
 		Operators operator = service.getOperatorById(id);
@@ -77,9 +78,9 @@ public class OperatorsController {
 		return responseEntity;
 	}
 
-	@GetMapping("/config/getOperator/downloadExcelFile")
-	public ResponseEntity<?> downloadNENotificationExcel() {
-		String fileName = "operator.xlsx";
+	@GetMapping("/config/operators/downloadExcelFile")
+	public ResponseEntity<?> downloadOperatorsExcel() {
+		String fileName = Constants.OPERATORS_INDEX+"_"+TimestampHelper.getFilenameTimestamp()+".xlsx";
 		String filePath = Constants.FILE_DESTINATION_FOLDER + fileName;
 		List<Operators> operators = service.getAllOperators();
 		if (operators != null && operators.size() > 0) {
@@ -92,7 +93,7 @@ public class OperatorsController {
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
-			return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + file.getName())
+			return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + fileName)
 					.contentType(mediaType).contentLength(file.length()).body(resource);
 		} else {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);

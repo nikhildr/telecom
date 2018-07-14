@@ -31,6 +31,8 @@ public class Constants {
 	public static final String NETWORK_DOMAIN_TYPE = "domain";
 	public static final String DATA_CENTER_INDEX = "datacenter";
 	public static final String DATA_CENTER_TYPE = "datacenter";
+	public static final String SEARCH = "/_search";
+	
 	public static List<String> getFixedServiceDataHeaders()
 	{
 		List<String> serviceDataHeaders=new ArrayList<>();

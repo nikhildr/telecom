@@ -1,8 +1,9 @@
 package com.config.repositories;
 
-import java.util.Map;
-import java.util.UUID;
-
+import com.config.entity.NetworkElement;
+import com.config.util.Constants;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -15,12 +16,11 @@ import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.client.RestTemplate;
 
-import com.config.entity.NetworkElement;
-import com.config.util.Constants;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.*;
 
 @Repository
 public class NetworkElementRepository {
@@ -30,6 +30,9 @@ public class NetworkElementRepository {
 
 	@Autowired
 	private ObjectMapper objectMapper;
+
+	@Autowired
+	private Environment env;
 
 	private String index = Constants.NETWORK_ELEMENT_INDEX;
 	private String type = Constants.NETWORK_ELEMENT_TYPE;
@@ -50,9 +53,9 @@ public class NetworkElementRepository {
 		return responseId;
 	}
 
-	public boolean updateNetworkElement(NetworkElement element) {
+	public boolean updateNetworkElement(String id,NetworkElement element) {
 		boolean status = false;
-		UpdateRequest updateRequest = new UpdateRequest(index, type, element.getElementId()).fetchSource(true);
+		UpdateRequest updateRequest = new UpdateRequest(index, type, id).fetchSource(true);
 		try {
 			String operatorJson = objectMapper.writeValueAsString(element);
 			updateRequest.doc(operatorJson, XContentType.JSON);
@@ -91,6 +94,29 @@ public class NetworkElementRepository {
 			e.getLocalizedMessage();
 		}
 		return status;
+	}
+
+	public List<NetworkElement> getAllNetworkElements() {
+		List<NetworkElement> elements = new ArrayList<>();
+		String url = env.getProperty("elasticsearch.url") + index + Constants.SEARCH;
+		RestTemplate restTemplate = new RestTemplate();
+		Object response = restTemplate.getForObject(url, Object.class);
+		if (response != null && response instanceof LinkedHashMap<?, ?>) {
+			LinkedHashMap<?, ?> map = objectMapper.convertValue(response, LinkedHashMap.class);
+			LinkedHashMap<?, ?> hits = (LinkedHashMap<?, ?>) map.get("hits");
+			int hitsSize = (Integer) hits.get("total");
+			if (hitsSize > 0) {
+				List<?> hitsArray = (List<?>) hits.get("hits");
+				for (Object object : hitsArray) {
+					LinkedHashMap<?, ?> hitsMap = (LinkedHashMap<?, ?>) object;
+					NetworkElement networkElement = null;
+					if (hitsMap.containsKey("_source") && hitsMap.get("_source") != null)
+						networkElement = (NetworkElement) objectMapper.convertValue(hitsMap.get("_source"), NetworkElement.class);
+					elements.add(networkElement);
+				}
+			}
+		}
+		return elements;
 	}
 
 }

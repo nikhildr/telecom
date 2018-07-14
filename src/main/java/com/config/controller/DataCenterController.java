@@ -23,64 +23,65 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.config.entity.NetworkElement;
-import com.config.service.NetworkElementService;
+import com.config.entity.DataCenter;
+import com.config.service.DataCenterService;
 import com.config.util.Constants;
 import com.config.util.MediaTypeUtils;
 import com.config.util.TimestampHelper;
 import com.config.util.WorkBookHelper;
 
 @RestController
-public class NetworkElementController {
+public class DataCenterController {
 
-	private static final Logger log = (Logger) LoggerFactory.getLogger(NetworkElementController.class);
+	private static final Logger log = (Logger) LoggerFactory.getLogger(DataCenterController.class);
 	@Autowired
-	private NetworkElementService service;
+	private DataCenterService service;
 
 	@Autowired
 	private ServletContext servletContext;
 
-	@PostMapping("/config/networkelement")
-	public ResponseEntity<?> addNetworkElement(@RequestBody NetworkElement element) {
+	@PostMapping("/config/datacenter")
+	public ResponseEntity<?> addDataCenter(@RequestBody DataCenter dataCenter) {
 		ResponseEntity<?> responseEntity = null;
-		String response = service.addNetworkElement(element);
+		dataCenter.setcDate(TimestampHelper.getCurrentTimestamp());
+		String response = service.addDataCenter(dataCenter);
 		if (response != null) {
 			responseEntity = new ResponseEntity<>(response, HttpStatus.OK);
 		}
 		return responseEntity;
 	}
 
-	@PutMapping("/config/networkelement/{id}")
-	public ResponseEntity<?> updateNetworkElement(@RequestBody NetworkElement element,@PathVariable String id) {
+	@PutMapping("/config/dataCenter/{id}")
+	public ResponseEntity<?> updateDataCenter(@RequestBody DataCenter dataCenter,@PathVariable String id) {
 		ResponseEntity<?> responseEntity = null;
-		if(service.updateNetworkElement(id,element))
+		if (service.updateDataCenter(id,dataCenter))
 			responseEntity = new ResponseEntity<>("updated successfully", HttpStatus.OK);
 		return responseEntity;
 	}
 
-	@DeleteMapping("/config/networkelement/{id}")
-	public ResponseEntity<?> deleteNetworkElement(@PathVariable String id) {
+	@DeleteMapping("/config/datacenter/{id}")
+	public ResponseEntity<?> deleteDataCenterById(@PathVariable String id) {
 		ResponseEntity<?> responseEntity = null;
-		if(service.deleteNetworkElementById(id))
-		responseEntity = new ResponseEntity<>("deleted successfully", HttpStatus.OK);
+		if (service.deleteDataCenterById(id))
+			responseEntity = new ResponseEntity<>("deleted successfully", HttpStatus.OK);
 		return responseEntity;
 	}
 
-	@GetMapping("/config/networkelement/{id}")
-	public ResponseEntity<?> getNetworkElement(@PathVariable String id) {
+	@GetMapping("/config/datacenter/{id}")
+	public ResponseEntity<?> getDataCenterById(@PathVariable String id) {
 		ResponseEntity<?> responseEntity = null;
-		NetworkElement element = service.getNetworkElementById(id);
-		responseEntity = new ResponseEntity<>(element, HttpStatus.OK);
+        DataCenter dataCenter = service.getDataCenterById(id);
+		responseEntity = new ResponseEntity<>(dataCenter, HttpStatus.OK);
 		return responseEntity;
 	}
 
-	@GetMapping("/config/networkelement/downloadExcelFile")
-	public ResponseEntity<?> downloadNetworkElementExcel() {
-		String fileName = Constants.NETWORK_ELEMENT_INDEX+"_"+TimestampHelper.getFilenameTimestamp()+".xlsx";
+	@GetMapping("/config/datacenter/downloadexcelfile")
+	public ResponseEntity<?> downloadDataCentersExcel() {
+		String fileName = Constants.DATA_CENTER_INDEX+"_"+TimestampHelper.getFilenameTimestamp()+".xlsx";
 		String filePath = Constants.FILE_DESTINATION_FOLDER + fileName;
-		List<NetworkElement> networkElements = service.getAllNetworkElements();
-		if (networkElements != null && networkElements.size() > 0) {
-			WorkBookHelper.writeToExcel(filePath, networkElements);
+		List<DataCenter> operators = service.getAllDataCenters();
+		if (operators != null && operators.size() > 0) {
+			WorkBookHelper.writeToExcel(filePath, operators);
 			MediaType mediaType = MediaTypeUtils.getMediaTypeForFileName(this.servletContext, filePath);
 			File file = new File(filePath);
 			InputStreamResource resource = null;
@@ -96,6 +97,4 @@ public class NetworkElementController {
 		}
 
 	}
-
-
 }

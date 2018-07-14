@@ -1,9 +1,8 @@
 package com.config.repositories;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
+import com.config.entity.NetworkDomain;
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -16,12 +15,14 @@ import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Repository;
 
 import com.config.entity.NENotifications;
 import com.config.util.Constants;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.web.client.RestTemplate;
 
 @Repository
 public class NENotificationsRepository {
@@ -31,6 +32,9 @@ public class NENotificationsRepository {
 
 	@Autowired
 	private ObjectMapper objectMapper;
+
+    @Autowired
+    private Environment env;
 
 	private String index = Constants.NE_NOTIFICATION_INDEX;
 	private String type = Constants.NE_NOTIFICATION_TYPE;
@@ -51,9 +55,9 @@ public class NENotificationsRepository {
 		return responseId;
 	}
 
-	public boolean updateNEnotification(NENotifications notification) {
+	public boolean updateNEnotification(String id,NENotifications notification) {
 		boolean status = false;
-		UpdateRequest updateRequest = new UpdateRequest(index, type, notification.getNotifId()).fetchSource(true);
+		UpdateRequest updateRequest = new UpdateRequest(index, type, id).fetchSource(true);
 
 		try {
 			String operatorJson = objectMapper.writeValueAsString(notification);
@@ -109,5 +113,28 @@ public class NENotificationsRepository {
 		}
 		return null;
 	}
+
+    public List<NENotifications> getAllNENotifications() {
+        List<NENotifications> notifications = new ArrayList<>();
+        String url = env.getProperty("elasticsearch.url") + index + Constants.SEARCH;
+        RestTemplate restTemplate = new RestTemplate();
+        Object response = restTemplate.getForObject(url, Object.class);
+        if (response != null && response instanceof LinkedHashMap<?, ?>) {
+            LinkedHashMap<?, ?> map = objectMapper.convertValue(response, LinkedHashMap.class);
+            LinkedHashMap<?, ?> hits = (LinkedHashMap<?, ?>) map.get("hits");
+            int hitsSize = (Integer) hits.get("total");
+            if (hitsSize > 0) {
+                List<?> hitsArray = (List<?>) hits.get("hits");
+                for (Object object : hitsArray) {
+                    LinkedHashMap<?, ?> hitsMap = (LinkedHashMap<?, ?>) object;
+                    NENotifications neNotifications = null;
+                    if (hitsMap.containsKey("_source") && hitsMap.get("_source") != null)
+                        neNotifications = (NENotifications) objectMapper.convertValue(hitsMap.get("_source"), NENotifications.class);
+                    notifications.add(neNotifications);
+                }
+            }
+        }
+        return notifications;
+    }
 
 }

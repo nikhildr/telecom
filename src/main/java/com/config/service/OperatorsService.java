@@ -24,7 +24,7 @@ public class OperatorsService {
 		return repository.deleteOperatorById(operatorId);
 	}
 	
-	public boolean updateOperator(Operators operator) {
+	public boolean updateOperator(String id,Operators operator) {
 		return repository.updateOperator(operator);
 	}
 	

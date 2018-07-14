@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 import com.config.entity.NetworkDomain;
 import com.config.repositories.NetworkDomainRepository;
 
+import java.util.List;
+
 @Component
 public class NetworkDomainService {
 	
@@ -21,8 +23,8 @@ public class NetworkDomainService {
 		return repository.deleteNetworkDomainById(id);
 	}
 	
-	public boolean updateNetworkDomain(NetworkDomain networkDomain) {
-		return repository.updateNetworkDomain(networkDomain);
+	public boolean updateNetworkDomain(String id,NetworkDomain networkDomain) {
+		return repository.updateNetworkDomain(id,networkDomain);
 	}
 	
 	public NetworkDomain getNetworkDomainById(String id)
@@ -31,4 +33,7 @@ public class NetworkDomainService {
 	}
 
 
+    public List<NetworkDomain> getAllNetworkDomains() {
+	    return repository.getAllNetowrkDomains();
+    }
 }
